@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    tools:context=".Tugas1">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="1"
+        >
+
+        <LinearLayout
+            android:weightSum="2">
+
+            <ImageView
+                android:id="@+id/imageOriColor"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="400dip"
+                android:layout_weight="2"
+                android:layout_marginBottom="10dip"
+                android:src="@drawable/noperson"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2">
+            <Button
+                android:id="@+id/takePictureBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Add Picture"
+                android:onClick="addPicture"/>
+
+            <Button
+                android:id="@+id/checkBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Check RGB"
+                android:onClick="checkRGB"/>
+        </LinearLayout>
+
+
+
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="250dip"
+            android:id="@+id/graphRed"
+            />
+
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="250dip"
+            android:id="@+id/graphGreen"
+            />
+
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="250dip"
+            android:id="@+id/graphBlue"
+            />
+
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="250dip"
+            android:id="@+id/graphGrayscale"
+            />
+    </TableLayout>
+</ScrollView>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    tools:context=".Tugas3b">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="1"
+        >
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_marginBottom="5dip">
+
+            <ImageView
+                android:id="@+id/imageOriColor"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginRight="5dip"
+                android:src="@drawable/noperson"
+                />
+            <ImageView
+                android:id="@+id/imageTransformColor"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginRight="5dip"
+                android:src="@drawable/noperson"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_marginBottom="10dip">
+            <Button
+                android:id="@+id/takePictureBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Add Picture"
+                android:onClick="addPicture"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="3"
+            android:layout_marginBottom="10dip">
+            <TextView
+                android:id="@+id/seekBarRedText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SeekBar Red"
+                android:textSize="14dip"
+                android:textStyle="bold"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/seekBarGreenText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SeekBar Green"
+                android:textSize="14dip"
+                android:textStyle="bold"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/seekBarBlueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SeekBar Blue"
+                android:textSize="14dip"
+                android:textStyle="bold"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="3">
+            <SeekBar
+                android:id="@+id/sbARed"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="10"
+                android:min="0"
+                android:progress="0"/>
+            <SeekBar
+                android:id="@+id/sbAGreen"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="10"
+                android:min="0"
+                android:progress="0"/>
+            <SeekBar
+                android:id="@+id/sbABlue"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="10"
+                android:min="0"
+                android:progress="0"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="3"
+            android:layout_marginBottom="10dip">
+            <TextView
+                android:id="@+id/sbARedText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="A value is 0"
+                android:textSize="12dip"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/sbAGreenText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="A value is 0"
+                android:textSize="12dip"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/sbABlueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="A value is 0"
+                android:textSize="12dip"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="3">
+            <SeekBar
+                android:id="@+id/sbBRed"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="10"
+                android:min="0"
+                android:progress="5"/>
+            <SeekBar
+                android:id="@+id/sbBGreen"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="10"
+                android:min="0"
+                android:progress="5"/>
+            <SeekBar
+                android:id="@+id/sbBBlue"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="10"
+                android:min="0"
+                android:progress="5"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="3"
+            android:layout_marginBottom="10dip">
+            <TextView
+                android:id="@+id/sbBRedText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="B value is 5"
+                android:textSize="12dip"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/sbBGreenText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="B value is 5"
+                android:textSize="12dip"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/sbBBlueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="B value is 5"
+                android:textSize="12dip"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="3">
+            <SeekBar
+                android:id="@+id/sbCRed"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="10"
+                android:min="0"
+                android:progress="0"/>
+            <SeekBar
+                android:id="@+id/sbCGreen"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="10"
+                android:min="0"
+                android:progress="0"/>
+            <SeekBar
+                android:id="@+id/sbCBlue"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="10"
+                android:min="0"
+                android:progress="0"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="3"
+            android:layout_marginBottom="10dip">
+            <TextView
+                android:id="@+id/sbCRedText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="C value is 0"
+                android:textSize="12dip"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/sbCGreenText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="C value is 0"
+                android:textSize="12dip"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/sbCBlueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="C value is 0"
+                android:textSize="12dip"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1"
+            android:layout_marginBottom="5dip">
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="250dip"
+                android:layout_weight="1"
+                android:id="@+id/graphRed"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1"
+            android:layout_marginBottom="5dip">
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="250dip"
+                android:layout_weight="1"
+                android:id="@+id/graphGreen"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1"
+            android:layout_marginBottom="5dip">
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="250dip"
+                android:layout_weight="1"
+                android:id="@+id/graphBlue"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1"
+            android:layout_marginBottom="5dip">
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="250dip"
+                android:layout_weight="1"
+                android:id="@+id/ekualRed"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1"
+            android:layout_marginBottom="5dip">
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="250dip"
+                android:layout_weight="1"
+                android:id="@+id/ekualGreen"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1"
+            android:layout_marginBottom="5dip">
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="250dip"
+                android:layout_weight="1"
+                android:id="@+id/ekualBlue"
+                />
+        </LinearLayout>
+
+    </TableLayout>
+</ScrollView>

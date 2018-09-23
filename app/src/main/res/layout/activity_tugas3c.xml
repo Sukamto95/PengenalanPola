@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    tools:context=".Tugas3c">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="1"
+        >
+
+        <LinearLayout
+            android:weightSum="2">
+
+            <ImageView
+                android:id="@+id/imageOriColor"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginRight="5dip"
+                android:src="@drawable/noperson"
+                />
+            <ImageView
+                android:id="@+id/imageResult"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginRight="5dip"
+                android:src="@drawable/noperson"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2">
+            <Button
+                android:id="@+id/takePictureBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Add Picture"
+                android:onClick="addPicture"/>
+
+            <Button
+                android:id="@+id/smoothBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Transform"
+                android:onClick="getSmoothedImage"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_marginBottom="5dip">
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="120dip"
+                android:layout_weight="1"
+                android:id="@+id/graphRed"
+                />
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="120dip"
+                android:layout_weight="1"
+                android:id="@+id/graphGreen"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_marginBottom="5dip">
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="120dip"
+                android:layout_weight="1"
+                android:id="@+id/graphBlue"
+                />
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="120dip"
+                android:layout_weight="1"
+                android:id="@+id/graphGrayscale"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_marginBottom="5dip">
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="120dip"
+                android:layout_weight="1"
+                android:id="@+id/smoothRed"
+                />
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="120dip"
+                android:layout_weight="1"
+                android:id="@+id/smoothGreen"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_marginBottom="5dip">
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="120dip"
+                android:layout_weight="1"
+                android:id="@+id/smoothBlue"
+                />
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="0dp"
+                android:layout_height="120dip"
+                android:layout_weight="1"
+                android:id="@+id/smoothGray"
+                />
+        </LinearLayout>
+
+    </TableLayout>
+</ScrollView>

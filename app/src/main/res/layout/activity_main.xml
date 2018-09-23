@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    tools:context=".MainActivity">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="1"
+        >
+
+        <LinearLayout
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/pengenalanPola"
+                android:text="PENGENALAN POLA"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textSize="20dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1">
+            <ImageView
+                android:id="@+id/logoImage"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="125dip"
+                android:layout_weight="1"
+                android:layout_marginTop="20dip"
+                android:layout_marginBottom="20dip"
+                android:src="@drawable/logo_itb"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/sukamto"
+                android:text="Sukamto"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textSize="18dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/nim"
+                android:text="23518017"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textSize="18dp"
+                android:layout_marginBottom="20dip"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1">
+            <Button
+                android:id="@+id/tugas1Btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="TUGAS 1"
+                android:textStyle="bold"
+                android:onClick="tugas1"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="1">
+            <Button
+                android:id="@+id/tugas2Btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="TUGAS 2"
+                android:textStyle="bold"
+                android:onClick="tugas2"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="3">
+            <Button
+                android:id="@+id/tugas3aBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="TUGAS 3a"
+                android:textStyle="bold"
+                android:onClick="tugas3a"/>
+            <Button
+                android:id="@+id/tugas3bBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="TUGAS 3b"
+                android:textStyle="bold"
+                android:onClick="tugas3b"/>
+            <Button
+                android:id="@+id/tugas3cBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="TUGAS 3c"
+                android:textStyle="bold"
+                android:onClick="tugas3c"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="1">
+            <Button
+                android:id="@+id/tugas4Btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="TUGAS 4"
+                android:textStyle="bold"
+                android:onClick="tugas4"/>
+        </LinearLayout>
+    </TableLayout>
+</ScrollView>
