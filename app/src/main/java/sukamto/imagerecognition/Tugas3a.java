@@ -130,7 +130,8 @@ public class Tugas3a extends AppCompatActivity {
         if (requestCode == MainModel.REQUEST_CAPTURE_IMAGE &&
                 resultCode == RESULT_OK) {
             if (data != null && data.getExtras() != null) {
-                Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+                Bitmap bmp = (Bitmap) data.getExtras().get("data");
+                Bitmap imageBitmap = MainModel.getScaledBitmap(bmp, 0);
                 image.setImageBitmap(imageBitmap);
                 MainModel.setBitmap(imageBitmap);
             }
@@ -143,7 +144,7 @@ public class Tugas3a extends AppCompatActivity {
             String picturePath = c.getString(columnIndex);
             c.close();
             Bitmap bmp = BitmapFactory.decodeFile(picturePath);
-            Bitmap imageBitmap = MainModel.getScaledBitmap(bmp, 640, 360, 90);
+            Bitmap imageBitmap = MainModel.getScaledBitmap(bmp, 90);
             image.setImageBitmap(imageBitmap);
             MainModel.setBitmap(imageBitmap);
         }

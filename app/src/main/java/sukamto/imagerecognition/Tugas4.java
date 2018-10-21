@@ -104,8 +104,8 @@ public class Tugas4 extends AppCompatActivity {
             String picturePath = c.getString(columnIndex);
             c.close();
             Bitmap bmp = BitmapFactory.decodeFile(picturePath);
-            Bitmap imageBitmap = MainModel.getScaledBitmap(bmp, 450, 450, 0);
-            Bitmap binaryBitmap = MainModel.getBinaryImage(imageBitmap,128);
+            //Bitmap imageBitmap = MainModel.getScaledBitmap(bmp, 450, 450, 0);
+            Bitmap binaryBitmap = MainModel.getBinaryImage(bmp,128);
             image.setImageBitmap(binaryBitmap);
             MainModel.setBitmap(binaryBitmap);
         }

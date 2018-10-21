@@ -97,7 +97,8 @@ public class Tugas5a extends AppCompatActivity {
         if (requestCode == MainModel.REQUEST_CAPTURE_IMAGE &&
                 resultCode == RESULT_OK) {
             if (data != null && data.getExtras() != null) {
-                Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+                Bitmap bmp = (Bitmap) data.getExtras().get("data");
+                Bitmap imageBitmap = MainModel.getScaledBitmap(bmp,0);
                 Bitmap binaryBitmap = MainModel.getBinaryImage(imageBitmap,128);
                 image.setImageBitmap(binaryBitmap);
                 MainModel.setBitmap(binaryBitmap);
@@ -111,7 +112,7 @@ public class Tugas5a extends AppCompatActivity {
             String picturePath = c.getString(columnIndex);
             c.close();
             Bitmap bmp = BitmapFactory.decodeFile(picturePath);
-            Bitmap imageBitmap = MainModel.getScaledBitmap(bmp, 450, 450, 0);
+            Bitmap imageBitmap = MainModel.getScaledBitmap(bmp,0);
             Bitmap binaryBitmap = MainModel.getBinaryImage(imageBitmap,128);
             image.setImageBitmap(binaryBitmap);
             MainModel.setBitmap(binaryBitmap);

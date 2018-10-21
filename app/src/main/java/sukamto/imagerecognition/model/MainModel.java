@@ -233,9 +233,19 @@ public class MainModel {
         return new Bitmap[]{colorResult, grayResult};
     }
 
-    public static Bitmap getScaledBitmap(Bitmap bitmap, int newWidth, int newHeight, int rotate){
+    public static Bitmap getScaledBitmap(Bitmap bitmap, int rotate){
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
+        int newWidth = width;
+        int newHeight = height;
+        int count = 0;
+        while(newWidth > 1000){
+            newWidth /= 2;
+            count++;
+        }
+        for(int i = 0 ; i < count ; i++){
+            newHeight /= 2;
+        }
         float scaleWidth = ((float) newWidth) / width;
         float scaleHeight = ((float) newHeight) / height;
         Matrix matrix = new Matrix();
