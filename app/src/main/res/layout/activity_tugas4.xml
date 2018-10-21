@@ -35,17 +35,17 @@
                 android:id="@+id/takePictureBtn"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:text="Add Picture"
                 android:onClick="addPicture"/>
 
-            <!--<Button-->
-                <!--android:id="@+id/checkBtn"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_weight="1"-->
-                <!--android:text="Check Text"-->
-                <!--android:onClick="textRecognition"/>-->
+            <Button
+                android:id="@+id/checkBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Check"
+                android:onClick="charRecognition"/>
         </LinearLayout>
 
         <LinearLayout
@@ -54,6 +54,7 @@
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="40dp"
                 android:id="@+id/resultText"/>
         </LinearLayout>
         <LinearLayout

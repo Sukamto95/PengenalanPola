@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -26,16 +25,13 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.util.HashMap;
+import sukamto.imagerecognition.model.MainModel;
 
 public class Tugas3b extends AppCompatActivity {
 
-    public HashMap<Integer,Integer> arr_red = new HashMap<Integer,Integer>();
-    public HashMap<Integer,Integer> arr_green = new HashMap<Integer,Integer>();
-    public HashMap<Integer,Integer> arr_blue = new HashMap<Integer,Integer>();
-    private static final int REQUEST_CAPTURE_IMAGE = 100;
-    private static final int REQUEST_SELECT_IMAGE = 200;
-    MainActivity main;
+    public int[] arr_red = new int[256];
+    public int[] arr_green = new int[256];
+    public int[] arr_blue = new int[256];
     ImageView image = null;
     ImageView transformImage = null;
     SeekBar sbARed;
@@ -73,7 +69,6 @@ public class Tugas3b extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tugas3b);
-        main = new MainActivity();
         image = (ImageView) findViewById(R.id.imageOriColor);
         transformImage = (ImageView) findViewById(R.id.imageTransformColor);
         sbARed = findViewById(R.id.sbARed);
@@ -106,7 +101,7 @@ public class Tugas3b extends AppCompatActivity {
         progBBlue = sbBBlue.getProgress();
         progCBlue = sbCBlue.getProgress();
 
-        Bitmap bitmap = main.getImageBitmap();
+        Bitmap bitmap = MainModel.getImageBitmap();
         if(bitmap != null){
             image.setImageBitmap(bitmap);
         }
@@ -323,17 +318,17 @@ public class Tugas3b extends AppCompatActivity {
         );
         if(pictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(pictureIntent,
-                    REQUEST_CAPTURE_IMAGE);
+                    MainModel.REQUEST_CAPTURE_IMAGE);
         }
     }
 
     public void choosePicture(){
         try{
             if (ActivityCompat.checkSelfPermission(Tugas3b.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(Tugas3b.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_SELECT_IMAGE);
+                ActivityCompat.requestPermissions(Tugas3b.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainModel.REQUEST_SELECT_IMAGE);
             } else{
                 Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, REQUEST_SELECT_IMAGE);
+                startActivityForResult(intent, MainModel.REQUEST_SELECT_IMAGE);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -344,19 +339,14 @@ public class Tugas3b extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CAPTURE_IMAGE &&
+        if (requestCode == MainModel.REQUEST_CAPTURE_IMAGE &&
                 resultCode == RESULT_OK) {
             if (data != null && data.getExtras() != null) {
                 Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
                 image.setImageBitmap(imageBitmap);
-                main.setBitmap(imageBitmap);
-                countRed();
-                countGreen();
-                countBlue();
-                ekualisasi();
-                setGraph();
+                MainModel.setBitmap(imageBitmap);
             }
-        } else if (requestCode == REQUEST_SELECT_IMAGE) {
+        } else if (requestCode == MainModel.REQUEST_SELECT_IMAGE) {
             Uri selectedImage = data.getData();
             String[] filePath = { MediaStore.Images.Media.DATA };
             Cursor c = getContentResolver().query(selectedImage, filePath, null, null, null);
@@ -365,23 +355,9 @@ public class Tugas3b extends AppCompatActivity {
             String picturePath = c.getString(columnIndex);
             c.close();
             Bitmap bmp = BitmapFactory.decodeFile(picturePath);
-            int width = bmp.getWidth();
-            int height = bmp.getHeight();
-            int newWidth = 640;
-            int newHeight = 360;
-            float scaleWidth = ((float) newWidth) / width;
-            float scaleHeight = ((float) newHeight) / height;
-            Matrix matrix = new Matrix();
-            matrix.postScale(scaleWidth, scaleHeight);
-            matrix.postRotate(90);
-            Bitmap imageBitmap = Bitmap.createBitmap(bmp, 0, 0, width, height, matrix, true);
+            Bitmap imageBitmap = MainModel.getScaledBitmap(bmp, 640, 360, 90);
             image.setImageBitmap(imageBitmap);
-            main.setBitmap(imageBitmap);
-            countRed();
-            countGreen();
-            countBlue();
-            ekualisasi();
-            setGraph();
+            MainModel.setBitmap(imageBitmap);
         }
     }
 
@@ -389,16 +365,24 @@ public class Tugas3b extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults)
     {
         switch (requestCode) {
-            case REQUEST_SELECT_IMAGE:
+            case MainModel.REQUEST_SELECT_IMAGE:
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(galleryIntent, REQUEST_SELECT_IMAGE);
+                    startActivityForResult(galleryIntent, MainModel.REQUEST_SELECT_IMAGE);
                 } else {
                     //do something like displaying a message that he didn`t allow the app to access gallery and you wont be able to let him select from gallery
                 }
                 break;
         }
+    }
+
+    public void transform(View view){
+        countRed();
+        countGreen();
+        countBlue();
+        ekualisasi();
+        setGraph();
     }
 
     public void setGraph(){
@@ -412,9 +396,9 @@ public class Tugas3b extends AppCompatActivity {
         DataPoint[] greenData = new DataPoint[256];
         DataPoint[] blueData = new DataPoint[256];
         for(int i=0;i<256;i++){
-            redData[i] = new DataPoint(i,arr_red.get(i));
-            greenData[i] = new DataPoint(i,arr_green.get(i));
-            blueData[i] = new DataPoint(i,arr_blue.get(i));
+            redData[i] = new DataPoint(i,arr_red[i]);
+            greenData[i] = new DataPoint(i,arr_green[i]);
+            blueData[i] = new DataPoint(i,arr_blue[i]);
         }
         LineGraphSeries<DataPoint> redPoint= new LineGraphSeries<>(redData);
         redPoint.setColor(Color.RED);
@@ -454,9 +438,9 @@ public class Tugas3b extends AppCompatActivity {
         DataPoint[] ekualGreenData = new DataPoint[256];
         DataPoint[] ekualBlueData = new DataPoint[256];
         for(int i=0;i<256;i++){
-            ekualRedData[i] = new DataPoint(i,main.EKUAL_RED.get(i));
-            ekualGreenData[i] = new DataPoint(i,main.EKUAL_GREEN.get(i));
-            ekualBlueData[i] = new DataPoint(i,main.EKUAL_BLUE.get(i));
+            ekualRedData[i] = new DataPoint(i,MainModel.ekual_red[i]);
+            ekualGreenData[i] = new DataPoint(i,MainModel.ekual_green[i]);
+            ekualBlueData[i] = new DataPoint(i,MainModel.ekual_blue[i]);
         }
         LineGraphSeries<DataPoint> ekualRedPoint= new LineGraphSeries<>(ekualRedData);
         LineGraphSeries<DataPoint> ekualGreenPoint= new LineGraphSeries<>(ekualGreenData);
@@ -486,9 +470,7 @@ public class Tugas3b extends AppCompatActivity {
     }
 
     public void countRed(){
-        for(int i=0;i<=255;i++){
-            arr_red.put(i, 0);
-        }
+        arr_red = new int[256];
         nPixelRed = 0;
         int xar = 0;
         int yar = (500*sbARed.getProgress())/10;
@@ -500,23 +482,23 @@ public class Tugas3b extends AppCompatActivity {
             int y = 0;
             if(x < xbr){
                 if(x == 0){
-                    arr_red.put(x,yar);
+                    arr_red[x] = yar;
                     nPixelRed += yar;
                 } else{
                     y = yar + (((x - xar)*(ybr - yar))/(xbr - xar));
-                    arr_red.put(x,y);
+                    arr_red[x] = y;
                     nPixelRed += y;
                 }
             } else if(x == xbr){
-                arr_red.put(x,ybr);
+                arr_red[x] = ybr;
                 nPixelRed += ybr;
             } else if(x > xbr){
                 if(x == 255){
-                    arr_red.put(x,ycr);
+                    arr_red[x] = ycr;
                     nPixelRed += ycr;
                 } else{
                     y = ybr + (((x - xbr)*(ycr - ybr))/(xcr - xbr));
-                    arr_red.put(x,y);
+                    arr_red[x] = y;
                     nPixelRed += y;
                 }
             }
@@ -524,9 +506,7 @@ public class Tugas3b extends AppCompatActivity {
     }
 
     public void countGreen(){
-        for(int i=0;i<=255;i++){
-            arr_green.put(i, 0);
-        }
+        arr_green = new int[256];
         nPixelGreen = 0;
         int xag = 0;
         int yag = (500*sbAGreen.getProgress())/10;
@@ -538,23 +518,23 @@ public class Tugas3b extends AppCompatActivity {
             int y = 0;
             if(x < xbg){
                 if(x == 0){
-                    arr_green.put(x,yag);
+                    arr_green[x] = yag;
                     nPixelGreen += yag;
                 } else{
                     y = yag + (((x - xag)*(ybg - yag))/(xbg - xag));
-                    arr_green.put(x,y);
+                    arr_green[x] = y;
                     nPixelGreen += y;
                 }
             } else if(x == xbg){
-                arr_green.put(x,ybg);
+                arr_green[x] = ybg;
                 nPixelGreen += ybg;
             } else if(x > xbg){
                 if(x == 255){
-                    arr_green.put(x,ycg);
+                    arr_green[x] = ycg;
                     nPixelGreen += ycg;
                 } else{
                     y = ybg + (((x - xbg)*(ycg - ybg))/(xcg - xbg));
-                    arr_green.put(x,y);
+                    arr_green[x] = y;
                     nPixelGreen += y;
                 }
             }
@@ -562,9 +542,7 @@ public class Tugas3b extends AppCompatActivity {
     }
 
     public void countBlue(){
-        for(int i=0;i<=255;i++){
-            arr_blue.put(i, 0);
-        }
+        arr_blue = new int[256];
         nPixelBlue = 0;
         int xab = 0;
         int yab = (500*sbABlue.getProgress())/10;
@@ -576,23 +554,23 @@ public class Tugas3b extends AppCompatActivity {
             int y = 0;
             if(x < xbb){
                 if(x == 0){
-                    arr_blue.put(x,yab);
+                    arr_blue[x] = yab;
                     nPixelBlue += yab;
                 } else{
                     y = yab + (((x - xab)*(ybb - yab))/(xbb - xab));
-                    arr_blue.put(x,y);
+                    arr_blue[x] = y;
                     nPixelBlue += y;
                 }
             } else if(x == xbb){
-                arr_blue.put(x,ybb);
+                arr_blue[x] = ybb;
                 nPixelBlue += ybb;
             } else if(x > xbb){
                 if(x == 255){
-                    arr_blue.put(x,ycb);
+                    arr_blue[x] = ycb;
                     nPixelBlue += ycb;
                 } else{
                     y = ybb + (((x - xbb)*(ycb - ybb))/(xcb - xbb));
-                    arr_blue.put(x,y);
+                    arr_blue[x] = y;
                     nPixelBlue += y;
                 }
             }
@@ -600,16 +578,14 @@ public class Tugas3b extends AppCompatActivity {
     }
 
     public void ekualisasi() {
-        for (int i = 0; i <= 255; i++) {
-            main.KUM_RED.put(i, (double) 0);
-            main.KUM_GREEN.put(i, (double) 0);
-            main.KUM_BLUE.put(i, (double) 0);
-            main.KUM_GRAY.put(i, (double) 0);
-            main.EKUAL_RED.put(i, 0);
-            main.EKUAL_GREEN.put(i, 0);
-            main.EKUAL_BLUE.put(i, 0);
-            main.EKUAL_GRAY.put(i, 0);
-        }
+        MainModel.kum_red = new double[256];
+        MainModel.kum_green = new double[256];
+        MainModel.kum_blue = new double[256];
+        MainModel.kum_gray = new double[256];
+        MainModel.ekual_red = new int[256];
+        MainModel.ekual_green = new int[256];
+        MainModel.ekual_blue = new int[256];
+        MainModel.ekual_gray = new int[256];
         Bitmap imageBitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
         int width = imageBitmap.getWidth();
         int height = imageBitmap.getHeight();
@@ -618,21 +594,18 @@ public class Tugas3b extends AppCompatActivity {
         int[] refGreen = new int[256];
         int[] refBlue = new int[256];
         imageBitmap.getPixels(pix, 0, width, 0, 0, width, height);
-        main.recKumulatif(arr_red, arr_green, arr_blue,0, 1);
+        MainModel.recKumulatif(arr_red, arr_green, arr_blue,0, 1);
         for (int i = 0; i < 256; i++) {
-            int kRed = (int) Math.round((main.KUM_RED.get(i) * (Math.pow(2, 8) - 1)) / (nPixelRed));
-            int ekualRedBefore = main.EKUAL_RED.get(kRed);
-            main.EKUAL_RED.put(kRed, arr_red.get(i) + ekualRedBefore);
+            int kRed = (int) Math.round((MainModel.kum_red[i] * (Math.pow(2, 8) - 1)) / (nPixelRed));
+            MainModel.ekual_red[kRed] += arr_red[i];
             refRed[i] = kRed;
 
-            int kGreen = (int) Math.round((main.KUM_GREEN.get(i) * (Math.pow(2, 8) - 1)) / (nPixelGreen));
-            int ekualGreenBefore = main.EKUAL_GREEN.get(kGreen);
-            main.EKUAL_GREEN.put(kGreen, arr_green.get(i) + ekualGreenBefore);
+            int kGreen = (int) Math.round((MainModel.kum_green[i] * (Math.pow(2, 8) - 1)) / (nPixelGreen));
+            MainModel.ekual_green[kGreen] += arr_green[i];
             refGreen[i] = kGreen;
 
-            int kBlue = (int) Math.round((main.KUM_BLUE.get(i) * (Math.pow(2, 8) - 1)) / (nPixelBlue));
-            int ekualBlueBefore = main.EKUAL_BLUE.get(kBlue);
-            main.EKUAL_BLUE.put(kBlue, arr_blue.get(i) + ekualBlueBefore);
+            int kBlue = (int) Math.round((MainModel.kum_blue[i] * (Math.pow(2, 8) - 1)) / (nPixelBlue));
+            MainModel.ekual_blue[kBlue] += arr_blue[i];
             refBlue[i] = kBlue;
         }
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);

@@ -46,10 +46,16 @@
                 android:id="@+id/takePictureBtn"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:text="Add Picture"
                 android:onClick="addPicture"/>
-
+            <Button
+                android:id="@+id/transformBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Transform"
+                android:onClick="transform"/>
         </LinearLayout>
 
         <LinearLayout

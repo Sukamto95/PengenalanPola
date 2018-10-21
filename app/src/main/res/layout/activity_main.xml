@@ -118,15 +118,45 @@
                 android:onClick="tugas3c"/>
         </LinearLayout>
         <LinearLayout
-            android:weightSum="1">
+            android:weightSum="2">
             <Button
                 android:id="@+id/tugas4Btn"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="TUGAS 4"
+                android:text="TUGAS 4A"
                 android:textStyle="bold"
                 android:onClick="tugas4"/>
+            <Button
+                android:id="@+id/tugas4bBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="TUGAS 4B"
+                android:textStyle="bold"
+                android:onClick="tugas4b"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="2">
+            <Button
+                android:id="@+id/tugas5aBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="TUGAS 5"
+                android:textStyle="bold"
+                android:onClick="tugas5a"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="2">
+            <Button
+                android:id="@+id/tugas6Btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="TUGAS 6"
+                android:textStyle="bold"
+                android:onClick="tugas6"/>
         </LinearLayout>
     </TableLayout>
 </ScrollView>

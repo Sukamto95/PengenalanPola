@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -25,15 +24,13 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-public class Tugas3a extends AppCompatActivity {
+import sukamto.imagerecognition.model.MainModel;
 
-    private static final int REQUEST_CAPTURE_IMAGE = 100;
-    private static final int REQUEST_SELECT_IMAGE = 200;
+public class Tugas3a extends AppCompatActivity {
     ImageView image = null;
     ImageView trImage = null;
     ImageView grayImage = null;
     ImageView trGrayImage = null;
-    MainActivity main = null;
     SeekBar seekBar;
     TextView seekBarText;
 
@@ -41,18 +38,17 @@ public class Tugas3a extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tugas3a);
-        main = new MainActivity();
         image = (ImageView) findViewById(R.id.imageOriColor);
         trImage = (ImageView) findViewById(R.id.imageTransformColor);
         grayImage = (ImageView) findViewById(R.id.imageOriGrayscale);
         trGrayImage = (ImageView) findViewById(R.id.imageTransformGrayscale);
         seekBar = findViewById(R.id.seekBarW);
         seekBarText = findViewById(R.id.seekBarText);
-        Bitmap bitmap = main.getImageBitmap();
+        Bitmap bitmap = MainModel.getImageBitmap();
         if(bitmap != null){
             image.setImageBitmap(bitmap);
         }
-        Bitmap gBitmap = main.getGrayBitmap();
+        Bitmap gBitmap = MainModel.getGrayBitmap();
         if(gBitmap != null){
             grayImage.setImageBitmap(gBitmap);
         }
@@ -110,17 +106,17 @@ public class Tugas3a extends AppCompatActivity {
         );
         if(pictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(pictureIntent,
-                    REQUEST_CAPTURE_IMAGE);
+                    MainModel.REQUEST_CAPTURE_IMAGE);
         }
     }
 
     public void choosePicture(){
         try{
             if (ActivityCompat.checkSelfPermission(Tugas3a.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(Tugas3a.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_SELECT_IMAGE);
+                ActivityCompat.requestPermissions(Tugas3a.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainModel.REQUEST_SELECT_IMAGE);
             } else{
                 Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, REQUEST_SELECT_IMAGE);
+                startActivityForResult(intent, MainModel.REQUEST_SELECT_IMAGE);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,16 +127,14 @@ public class Tugas3a extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CAPTURE_IMAGE &&
+        if (requestCode == MainModel.REQUEST_CAPTURE_IMAGE &&
                 resultCode == RESULT_OK) {
             if (data != null && data.getExtras() != null) {
                 Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
                 image.setImageBitmap(imageBitmap);
-                main.setBitmap(imageBitmap);
-                double progress = seekBar.getProgress();
-                transformImage(progress/10);
+                MainModel.setBitmap(imageBitmap);
             }
-        } else if (requestCode == REQUEST_SELECT_IMAGE) {
+        } else if (requestCode == MainModel.REQUEST_SELECT_IMAGE) {
             Uri selectedImage = data.getData();
             String[] filePath = { MediaStore.Images.Media.DATA };
             Cursor c = getContentResolver().query(selectedImage, filePath, null, null, null);
@@ -149,20 +143,9 @@ public class Tugas3a extends AppCompatActivity {
             String picturePath = c.getString(columnIndex);
             c.close();
             Bitmap bmp = BitmapFactory.decodeFile(picturePath);
-            int width = bmp.getWidth();
-            int height = bmp.getHeight();
-            int newWidth = 640;
-            int newHeight = 360;
-            float scaleWidth = ((float) newWidth) / width;
-            float scaleHeight = ((float) newHeight) / height;
-            Matrix matrix = new Matrix();
-            matrix.postScale(scaleWidth, scaleHeight);
-            matrix.postRotate(90);
-            Bitmap imageBitmap = Bitmap.createBitmap(bmp, 0, 0, width, height, matrix, true);
+            Bitmap imageBitmap = MainModel.getScaledBitmap(bmp, 640, 360, 90);
             image.setImageBitmap(imageBitmap);
-            main.setBitmap(imageBitmap);
-            double progress = seekBar.getProgress();
-            transformImage(progress/10);
+            MainModel.setBitmap(imageBitmap);
         }
     }
 
@@ -170,11 +153,11 @@ public class Tugas3a extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults)
     {
         switch (requestCode) {
-            case REQUEST_SELECT_IMAGE:
+            case MainModel.REQUEST_SELECT_IMAGE:
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(galleryIntent, REQUEST_SELECT_IMAGE);
+                    startActivityForResult(galleryIntent, MainModel.REQUEST_SELECT_IMAGE);
                 } else {
                     //do something like displaying a message that he didn`t allow the app to access gallery and you wont be able to let him select from gallery
                 }
@@ -182,12 +165,17 @@ public class Tugas3a extends AppCompatActivity {
         }
     }
 
+    public void transform(View view){
+        double progress = seekBar.getProgress();
+        transformImage(progress/10);
+    }
+
     public void transformImage(double w){
-        main.countColor();
-        main.ekualisasi(w);
-        grayImage.setImageBitmap(main.getGrayBitmap());
-        trImage.setImageBitmap(main.getTrBitmap());
-        trGrayImage.setImageBitmap(main.getTrGrayBitmap());
+        MainModel.countColor();
+        MainModel.ekualisasi(w);
+        grayImage.setImageBitmap(MainModel.getGrayBitmap());
+        trImage.setImageBitmap(MainModel.getTrBitmap());
+        trGrayImage.setImageBitmap(MainModel.getTrGrayBitmap());
         GraphView grayGraph = (GraphView) findViewById(R.id.graphGrayscale);
         GraphView redGraph = (GraphView) findViewById(R.id.graphRed);
         GraphView greenGraph = (GraphView) findViewById(R.id.graphGreen);
@@ -201,10 +189,10 @@ public class Tugas3a extends AppCompatActivity {
         DataPoint[] blueData = new DataPoint[256];
         DataPoint[] grayData = new DataPoint[256];
         for(int i=0;i<256;i++){
-            redData[i] = new DataPoint(i,main.ARR_RED.get(i));
-            greenData[i] = new DataPoint(i,main.ARR_GREEN.get(i));
-            blueData[i] = new DataPoint(i,main.ARR_BLUE.get(i));
-            grayData[i] = new DataPoint(i,main.ARR_GRAY.get(i));
+            redData[i] = new DataPoint(i,MainModel.ARR_RED[i]);
+            greenData[i] = new DataPoint(i,MainModel.ARR_GREEN[i]);
+            blueData[i] = new DataPoint(i,MainModel.ARR_BLUE[i]);
+            grayData[i] = new DataPoint(i,MainModel.ARR_GRAY[i]);
         }
         LineGraphSeries<DataPoint> redPoint= new LineGraphSeries<>(redData);
         redPoint.setColor(Color.RED);
@@ -268,14 +256,14 @@ public class Tugas3a extends AppCompatActivity {
         DataPoint[] kumulatifGreenData = new DataPoint[256];
         DataPoint[] kumulatifBlueData = new DataPoint[256];
         for(int i=0;i<256;i++){
-            ekualGrayData[i] = new DataPoint(i,main.EKUAL_GRAY.get(i));
-            ekualRedData[i] = new DataPoint(i,main.EKUAL_RED.get(i));
-            ekualGreenData[i] = new DataPoint(i,main.EKUAL_GREEN.get(i));
-            ekualBlueData[i] = new DataPoint(i,main.EKUAL_BLUE.get(i));
-            kumulatifGrayData[i] = new DataPoint(i,main.KUM_GRAY.get(i));
-            kumulatifRedData[i] = new DataPoint(i,main.KUM_RED.get(i));
-            kumulatifGreenData[i] = new DataPoint(i,main.KUM_GREEN.get(i));
-            kumulatifBlueData[i] = new DataPoint(i,main.KUM_BLUE.get(i));
+            ekualGrayData[i] = new DataPoint(i,MainModel.ekual_gray[i]);
+            ekualRedData[i] = new DataPoint(i,MainModel.ekual_red[i]);
+            ekualGreenData[i] = new DataPoint(i,MainModel.ekual_green[i]);
+            ekualBlueData[i] = new DataPoint(i,MainModel.ekual_blue[i]);
+            kumulatifGrayData[i] = new DataPoint(i,MainModel.kum_gray[i]);
+            kumulatifRedData[i] = new DataPoint(i,MainModel.kum_red[i]);
+            kumulatifGreenData[i] = new DataPoint(i,MainModel.kum_green[i]);
+            kumulatifBlueData[i] = new DataPoint(i,MainModel.kum_blue[i]);
         }
         LineGraphSeries<DataPoint> ekualGrayPoint= new LineGraphSeries<>(ekualGrayData);
         LineGraphSeries<DataPoint> ekualRedPoint= new LineGraphSeries<>(ekualRedData);

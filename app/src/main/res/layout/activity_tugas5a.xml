@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    tools:context=".Tugas5a">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="1"
+        >
+
+        <LinearLayout
+            android:weightSum="2">
+
+            <ImageView
+                android:id="@+id/imageOriColor"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="280dip"
+                android:layout_weight="2"
+                android:layout_marginBottom="10dip"
+                android:src="@drawable/noperson"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="3">
+            <Button
+                android:id="@+id/takePictureBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Add Picture"
+                android:onClick="addPicture"/>
+
+            <Button
+                android:id="@+id/manualBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Manual"
+                android:onClick="manualThinning"/>
+
+            <Button
+                android:id="@+id/zhangSuenBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Zhang Suen"
+                android:onClick="zhangSuenThinning"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1">
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="10dp"
+                android:textSize="20dp"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:text="Result"
+                android:id="@+id/resultTitle"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2">
+
+            <ImageView
+                android:id="@+id/imageSkeleton"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginBottom="10dip"
+                android:layout_marginRight="10dip"
+                android:src="@drawable/noperson"
+                />
+            <ImageView
+                android:id="@+id/imageZhangSuen"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginBottom="10dip"
+                android:src="@drawable/noperson"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2">
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:text="Manual Thinning"
+                android:id="@+id/manualText"/>
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:text="Zhang Suen Thinning"
+                android:id="@+id/ZhangSuenText"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="1">
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="40dp"
+                android:id="@+id/resultText"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="1">
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/skeletonText"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="1">
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/zsCodeText"/>
+        </LinearLayout>
+    </TableLayout>
+</ScrollView>
