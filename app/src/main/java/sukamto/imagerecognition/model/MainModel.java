@@ -658,16 +658,16 @@ public class MainModel {
         return arr;
     }
 
-    public static StringBuffer getSkeletonFeature(Bitmap bitmap) {
+    public static ArrayList<SkeletonFeature> getSkeletonFeature(Bitmap bitmap) {
         int count;
         int[] border, border2;
-
+        ArrayList<SkeletonFeature> features = new ArrayList<>();
         int height = bitmap.getHeight();
         int width = bitmap.getWidth();
         int size = height * width;
         int[] pixels = new int[size];
         int[] pixelsa = new int[size];
-        StringBuffer stringBuffer = new StringBuffer();
+        //StringBuffer stringBuffer = new StringBuffer();
 
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
         bitmap.getPixels(pixelsa, 0, width, 0, 0, width, height);
@@ -684,14 +684,36 @@ public class MainModel {
 
                     border2 = SupportModel.getNewBorder(pixelsa, border[0], border[1], border[2], border[3], width);
                     SkeletonFeature sf = SupportModel.extractFeature(pixelsa, border2[0], border2[1], border2[2], border2[3], width);
-
-                    stringBuffer.append(String.format("%d, %b, %b, %b, %b, %b, %b, %b, %b, %b\r\n",
-                            sf.endpoints.size(),
-                            sf.hTop, sf.hMid, sf.hBottom,
-                            sf.vLeft, sf.vMid, sf.vRight,
-                            sf.lTop, sf.lMid, sf.lBottom));
+                    features.add(sf);
+//                    stringBuffer.append(String.format("%d, %b, %b, %b, %b, %b, %b, %b, %b, %b\r\n",
+//                            sf.endpoints.size(),
+//                            sf.hTop, sf.hMid, sf.hBottom,
+//                            sf.vLeft, sf.vMid, sf.vRight,
+//                            sf.lTop, sf.lMid, sf.lBottom));
                 }
             }
+        }
+        //return stringBuffer;
+        return features;
+    }
+
+    public static StringBuffer featuresToString(ArrayList<SkeletonFeature> sf) {
+        StringBuffer stringBuffer = new StringBuffer();
+        StringBuffer dir = new StringBuffer();
+        String endDirection = "";
+        for(int i = 0 ; i < sf.size() ; i++){
+            stringBuffer.append(String.format("%d, %b, %b, %b, %b, %b, %b, %b, %b, %b",
+                sf.get(i).endpoints.size(),
+                sf.get(i).hTop, sf.get(i).hMid, sf.get(i).hBottom,
+                sf.get(i).vLeft, sf.get(i).vMid, sf.get(i).vRight,
+                sf.get(i).lTop, sf.get(i).lMid, sf.get(i).lBottom));
+            for(int j = 0 ; j < sf.get(i).endpoints.size() ; j++){
+                if(j != 0){
+                   dir.append(",");
+                }
+                dir.append(sf.get(i).endpoints.get(j));
+            }
+            stringBuffer.append(String.format(", {%s}\r\n",dir));
         }
         return stringBuffer;
     }
@@ -699,6 +721,7 @@ public class MainModel {
     public static String recognitionFromFeature(String string){
         String[] features = string.split("\n");
         String result = "";
+        boolean isSame = true;
         for(int i = 0 ; i < features.length ; i++){
             String[] feature = features[i].split(", ");
             String endpoint = feature[0].trim();
@@ -711,6 +734,8 @@ public class MainModel {
             String ltop = feature[7].trim();
             String lmid = feature[8].trim();
             String lbot = feature[9].trim();
+            String endDir = feature[10].trim();
+            String[] endDirs = endDir.substring(1, endDir.length() - 1).split(",");
             if(endpoint.equals("0")){
                 if(vleft.equals("true")){
                     if(lmid.equals("true")){
@@ -739,11 +764,7 @@ public class MainModel {
                 if(hmid.equals("true")){
                     result += "R ";
                 } else if(htop.equals("true") && hbot.equals("true")){
-                    if(hbot.equals("true")){
-                        result += "Z ";
-                    } else{
-                        result += "7 ";
-                    }
+                    result += "Z ";
                 } else if(hbot.equals("true")){
                     if(vleft.equals("true")){
                         result += "L ";
@@ -758,20 +779,40 @@ public class MainModel {
                     } else{
                         result += "b ";
                     }
-                } else if(lbot.equals("true")){
-                    if(vright.equals("true")){
-                        result += "d ";
-                    } else{
+                } else if(lbot.equals("true") && vright.equals("true")){
+                    if(endDirs[0].equals("6")){
                         result += "a ";
+                    } else {
+                        result += "d ";
                     }
                 } else if(lmid.equals("true")){
                     result += "Q ";
-                } else if(ltop.equals("true")){
-                    result += "q ";
-                } else if(vright.equals("true")){
-                    result += "I ";
+                }else if(vright.equals("true")){
+                    if(ltop.equals("true")){
+                        if(endDirs[1].equals("7")){
+                            result += "g ";
+                        } else {
+                            result += "q ";
+                        }
+                    } else{
+                        if(endDirs[1].equals("4")){
+                            result += "I ";
+                        } else{
+                            result += "J ";
+                        }
+                    }
                 } else {
-                    result += "C";
+                    if(endDirs[0].equals("6") || endDirs[1].equals("6")){
+                        result += "G ";
+                    } else if(endDirs[0].equals("1")){
+                        result += "v ";
+                    } else if(endDirs[0].equals("2")){
+                        result += "V ";
+                    } else if(endDirs[0].equals("4") && endDirs[1].equals("1")){
+                        result += "C ";
+                    } else if(endDirs[0].equals("4") && endDirs[1].equals("0")){
+                        result += "S ";
+                    }
                 }
             } else if(endpoint.equals("3")){
                 if(vmid.equals("true")){
@@ -782,49 +823,83 @@ public class MainModel {
                     if(hbot.equals("true")){
                         if(hmid.equals("true")) {
                             result += "E ";
-                        } else {
-                            result += "z ";
+                        } else{
+                            result += "Z ";
                         }
                     } else{
                         if(vleft.equals("true")){
                             result += "F ";
                         } else{
-                            result += "5 ";
+                            if(endDirs[0].equals("2")){
+                                result += "5 ";
+                            } else {
+                                result += "7 ";
+                            }
                         }
                     }
                 } else if(hbot.equals("true")){
                     result += "2 ";
                 } else if(vleft.equals("true")){
                     if(vright.equals("false")){
-                        result += "r ";
+                        if(endDirs[0].equals("0") && endDirs[1].equals("4")){
+                            result += "h ";
+                        } else {
+                            result += "r ";
+                        }
                     } else{
-                        result += "M ";
+                        if(endDirs[0].equals("1") && endDirs[1].equals("4")){
+                            result += "M ";
+                        } else if(endDirs[0].equals("0") && endDirs[1].equals("4")){
+                            result += "n ";
+                        } else{
+                            result += "u ";
+                        }
                     }
                 } else if(vright.equals("true")){
                     result += "1 ";
                 } else {
-                    result += "Y ";
+                    if(endDirs[0].equals("1") && endDirs[1].equals("7")){
+                        result += "Y ";
+                    } else if(endDirs[0].equals("2") && endDirs[1].equals("0")){
+                        result += "y ";
+                    } else {
+                        result += "3 ";
+                    }
                 }
             } else if(endpoint.equals("4")){
                 if(hmid.equals("true")){
                     result += "H ";
-                } else if(vmid.equals("true")){
-                    if(vleft.equals("true")){
-                        result += "m ";
-                    } else{
-                        result += "t ";
-                    }
-                } else if(vleft.equals("false")){
-                    result += "x ";
+                } else if(vmid.equals("true") && vleft.equals("true")){
+                    result += "m ";
                 } else if(htop.equals("true")){
-                    result += "f ";
+                    if(hbot.equals("true")){
+                        result += "z ";
+                    } else{
+                        if(endDirs[0].equals("0")){
+                            result += "t ";
+                        } else{
+                            result += "f ";
+                        }
+                    }
                 } else if(vright.equals("true")){
                     result += "N ";
+                } else if(vleft.equals("false")){
+                    if(endDirs[0].equals("2") && endDirs[2].equals("4")){
+                        result += "W ";
+                    } else if(endDirs[0].equals("7") && endDirs[2].equals("5")){
+                        result += "X ";
+                    } else {
+                        result += "x ";
+                    }
                 } else{
-                    result += "K ";
+                    if(endDirs[0].equals("0") && endDirs[1].equals("1")){
+                        result += "k ";
+                    } else{
+                        result += "K ";
+                    }
                 }
             } else if(endpoint.equals("5")){
-                result += "W ";
+                result += "w ";
             }
 
         }
