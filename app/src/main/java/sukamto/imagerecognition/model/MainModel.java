@@ -3,8 +3,10 @@ package sukamto.imagerecognition.model;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainModel {
     public static int[] ARR_RED = new int[256];
@@ -29,6 +31,11 @@ public class MainModel {
     public static Bitmap grayBitmap = null;
     public static Bitmap trBitmap = null;
     public static Bitmap trGrayBitmap = null;
+    public static int totalSkinPixel;
+    public static int xMinSkinPixel;
+    public static int xMaxSkinPixel;
+    public static int yMinSkinPixel;
+    public static int yMaxSkinPixel;
 
     public static void setBitmap(Bitmap bitmap){
         imageBitmap = bitmap;
@@ -51,6 +58,15 @@ public class MainModel {
     }
 
     public static Bitmap getGrayBitmap(){
+        int width = imageBitmap.getWidth();
+        int height = imageBitmap.getHeight();
+        grayBitmap = imageBitmap.copy(imageBitmap.getConfig(), true);
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int[] pixel = SupportModel.getPixelColor(imageBitmap, x, y);
+                grayBitmap.setPixel(x, y, Color.rgb(pixel[3], pixel[3], pixel[3]));
+            }
+        }
         return grayBitmap;
     }
 
@@ -191,7 +207,11 @@ public class MainModel {
         int count;
         int width = imageBitmap.getWidth();
         int height = imageBitmap.getHeight();
-        int sumR, sumG, sumB, sumGr;
+        int[][] arrBitmap = SupportModel.getPixelsArray(imageBitmap);
+        int[][] arrRed = new int[width][height];
+        int[][] arrGreen = new int[width][height];
+        int[][] arrBlue = new int[width][height];
+        int sumR, sumG, sumB;
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -199,11 +219,10 @@ public class MainModel {
                 sumR = 0;
                 sumG = 0;
                 sumB = 0;
-                sumGr = 0;
                 for (int a = -1; a <= 1; a++) {
                     for (int b = -1; b <= 1; b++) {
                         if (i + a >= 0 && i + a < width && j + b >= 0 && j + b < height) {
-                            int pixel = imageBitmap.getPixel(i+a,j+b);
+                            int pixel = arrBitmap[i+a][j+b];
                             int red = (pixel >> 16) & 0xff;
                             int green = (pixel >> 8) & 0xff;
                             int blue = (pixel) & 0xff;
@@ -211,7 +230,6 @@ public class MainModel {
                             sumR += red;
                             sumG += green;
                             sumB += blue;
-                            sumGr += gray;
                             count++;
                         }
                     }
@@ -220,17 +238,20 @@ public class MainModel {
                 int avgG = sumG/count;
                 int avgB = sumB/count;
                 int avgGray = (avgR+avgG+avgB)/3;
-
+                arrRed[i][j] = avgR;
+                arrGreen[i][j] = avgG;
+                arrBlue[i][j] = avgB;
                 smooth_red[avgR] += 1;
                 smooth_green[avgG] += 1;
                 smooth_blue[avgB] += 1;
                 smooth_gray[avgGray] += 1;
+
                 colorResult.setPixel(i,j, Color.rgb(avgR, avgG, avgB));
                 grayResult.setPixel(i,j, Color.rgb(avgGray, avgGray, avgGray));
             }
         }
-
-        return new Bitmap[]{colorResult, grayResult};
+        Bitmap[] bitmapResults = SupportModel.arrToBitmapColor(arrRed, arrGreen, arrBlue);
+        return new Bitmap[]{bitmapResults[0], bitmapResults[1]};
     }
 
     public static Bitmap getScaledBitmap(Bitmap bitmap, int rotate){
@@ -911,4 +932,325 @@ public class MainModel {
 //
 //        return Tree.search(string);
 //    }
+
+
+    public static Bitmap getConvolutionImage(Bitmap bitmap) {
+        Bitmap colorResult = bitmap.copy(bitmap.getConfig(), true);
+        int count;
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[][] arrBitmap = SupportModel.getPixelsArray(bitmap);
+        int[] colorPixels;
+        ArrayList<Integer> colorList = new ArrayList<>();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                count = 0;
+                colorList = new ArrayList<>();
+                for (int a = -1; a <= 1; a++) {
+                    for (int b = -1; b <= 1; b++) {
+                        if (i + a >= 0 && i + a < width && j + b >= 0 && j + b < height) {
+                            int pixel = arrBitmap[i+a][j+b];
+                            colorList.add(pixel);
+                            count++;
+                        }
+                    }
+                }
+                colorPixels = new int[colorList.size()];
+                for(int c = 0; c < colorList.size(); c++){
+                    colorPixels[c] = colorList.get(c);
+                }
+                Arrays.sort(colorPixels);
+                int pixel = colorPixels[count/2];
+                arrBitmap[i][j] = pixel;
+            }
+        }
+        colorResult = SupportModel.arrToBitmapColor(arrBitmap);
+        imageBitmap = colorResult;
+        return colorResult;
+    }
+
+    public static Bitmap getSkinPixels(Bitmap bitmap, boolean[][] skinPixels){
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[][] arrBitmap = SupportModel.getPixelsArray(bitmap);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int pixel = arrBitmap[i][j];
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                int blue = (pixel) & 0xff;
+//                float[] hsv = new float[3];
+//                Color.colorToHSV(pixel, hsv);
+//                float h = hsv[0];
+//                float s = hsv[1];
+//                float v = hsv[2];
+                float y = (float) ((0.257*red) + (0.504*green) + (0.098*blue) + 16);
+                float cb = (float) (-(0.148*red) - (0.291*green)+ (0.439*blue) + 128);
+                float cr = (float) ((0.439*red) - (0.368*green) - (0.071*blue) + 128);
+                if(cb > 105 && cb < 135 && cr > 140 && cr < 165){
+                    skinPixels[i][j] = true;
+                } else{
+                    skinPixels[i][j] = false;
+                }
+            }
+        }
+        return getSkinBitmap(arrBitmap, skinPixels);
+    }
+
+    public static void detectFace(Bitmap bitmap, boolean[][] skinPixels){
+        boolean[][] isVisit = new boolean[skinPixels.length][skinPixels[0].length];
+        for(int i = 0; i < skinPixels.length; i++){
+            for(int j = 0; j < skinPixels[0].length; j++){
+                isVisit[i][j] = false;
+            }
+        }
+        for(int i = 1; i < skinPixels.length-1; i++){
+            for(int j = 1; j < skinPixels[0].length-1; j++){
+                if(!isVisit[i][j] && skinPixels[i][j]){
+                    xMinSkinPixel = i;
+                    xMaxSkinPixel = i;
+                    yMaxSkinPixel = j;
+                    yMinSkinPixel = j;
+                    totalSkinPixel = 0;
+                    floodFill(skinPixels, isVisit, i, j);
+//                    Log.e("total", totalSkinPixel +"");
+//                    Log.e("xmin", xMinSkinPixel +"");
+//                    Log.e("xmax", xMaxSkinPixel +"");
+//                    Log.e("ymin", yMinSkinPixel +"");
+//                    Log.e("ymax", yMaxSkinPixel +"");
+                    if(totalSkinPixel > 100) {
+                        int[] boundary = getBoundary(skinPixels, xMinSkinPixel, xMaxSkinPixel, yMinSkinPixel, yMaxSkinPixel);
+                        int xminb = boundary[0];
+                        int xmaxb = boundary[1];
+                        int yminb = boundary[2];
+                        int ymaxb = boundary[3];
+                        int totalSkin = boundary[4];
+                        int newWidth = xmaxb - xminb;
+                        int newHeight = ymaxb - yminb;
+                        float goldenRatio = (float) (((1 + Math.sqrt(5)) / 2) - 0.65);
+                        float goldenRatio2 = (float) (((1 + Math.sqrt(5)) / 2) + 0.65);
+                        float rasio = (float) newHeight / (float) newWidth;
+                        int skinPercentage = (totalSkin * 100) / (newWidth * newHeight);
+                        if(skinPercentage > 55 && rasio <= goldenRatio2 && rasio >= goldenRatio){
+                            createBoundaryBox(bitmap, xminb, xmaxb, yminb, ymaxb);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void floodFill(boolean[][] skinPixels, boolean[][] isVisit, int x, int y) {
+        if (x - 1 >= 0 && x + 1 < skinPixels.length && y - 1 >= 0 && y + 1 < skinPixels[0].length){
+            if(skinPixels[x][y] && !isVisit[x][y]){
+                isVisit[x][y] = true;
+                totalSkinPixel++;
+                if(x < xMinSkinPixel){
+                    xMinSkinPixel = x;
+                }
+                if(x > xMaxSkinPixel){
+                    xMaxSkinPixel = x;
+                }
+                if(y < yMinSkinPixel){
+                    yMinSkinPixel = y;
+                }
+                if(y > yMaxSkinPixel){
+                    yMaxSkinPixel = y;
+                }
+                //floodFill(skinPixels,isVisit, x - 1, y - 1);
+                floodFill(skinPixels,isVisit, x - 1, y);
+                //floodFill(skinPixels,isVisit, x - 1, y + 1);
+                floodFill(skinPixels,isVisit, x, y - 1);
+                floodFill(skinPixels,isVisit, x, y + 1);
+                //floodFill(skinPixels,isVisit, x + 1, y - 1);
+                floodFill(skinPixels,isVisit, x + 1, y);
+                //floodFill(skinPixels,isVisit, x + 1, y + 1);
+            }
+        }
+    }
+
+    private static int[] getBoundary(boolean[][] skinPixels, int xmin, int xmax, int ymin, int ymax){
+        int countX = 0;
+        int countY = 0;
+        int tempX = 0;
+        int tempY = 0;
+        int totalSkin = 0;
+        for(int a = xmin; a <= xmax; a++){
+            for(int b = ymin; b <= ymax; b++){
+                if(skinPixels[a][b]){
+                    countX++;
+                    countY++;
+                    tempX += a;
+                    tempY += b;
+                }
+            }
+        }
+        int centerX = tempX / countX;
+        int centerY = tempY / countY;
+//        Log.e("centerX", centerX +"");
+//        Log.e("centerY", centerY +"");
+        countY = 0;
+        tempY = 0;
+        for(int a = xmin; a <= xmax; a++){
+            for(int b = ymin; b < centerY; b++){
+                if(skinPixels[a][b]){
+                    countY++;
+                    tempY += centerY - b;
+                    totalSkin++;
+                }
+            }
+        }
+        int yplus = tempY / countY;
+        countY = 0;
+        tempY = 0;
+        for(int a = xmin; a <= xmax; a++){
+            for(int b = centerY + 1; b <= ymax; b++){
+                if(skinPixels[a][b]){
+                    countY++;
+                    tempY += b - centerY;
+                    totalSkin++;
+                }
+            }
+        }
+        int yminus = tempY / countY;
+
+        countX = 0;
+        tempX = 0;
+        for(int a = xmin; a < centerX; a++){
+            for(int b = ymin; b <= ymax; b++){
+                if(skinPixels[a][b]){
+                    countX++;
+                    tempX += centerX - a;
+                }
+            }
+        }
+        int xplus = tempX / countX;
+        countX = 0;
+        tempX = 0;
+        for(int a = centerX + 1; a <= xmax; a++){
+            for(int b = ymin; b <= ymax; b++){
+                if(skinPixels[a][b]){
+                    countX++;
+                    tempX += a - centerX;
+                }
+            }
+        }
+        int xminus = tempX / countX;
+
+        int xmin2 = centerX - (xminus * 2);
+        int xmax2 = centerX + (xplus * 2);
+        int ymin2 = centerY - (yminus * 2);
+        int ymax2 = centerY + (yplus * 2);
+//        Log.e("xmin2", xmin2 +"");
+//        Log.e("xmax2", xmax2 +"");
+//        Log.e("ymin2", ymin2 +"");
+//        Log.e("ymax2", ymax2 +"");
+        return new int[]{xmin2, xmax2, ymin2, ymax2, totalSkin};
+    }
+
+    public static void createBoundaryBox(Bitmap bitmap, int xmin, int xmax, int ymin, int ymax){
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        if(xmin<0)xmin = 0;
+        if(xmax>width)xmax = width;
+        if(ymin<0)ymin = 0;
+        if(ymax>height)ymax = height;
+        for(int i = xmin; i < xmax; i++){
+            bitmap.setPixel(i, ymin, Color.YELLOW);
+            bitmap.setPixel(i, ymax, Color.YELLOW);
+        }
+        for(int j = ymin; j < ymax; j++){
+            bitmap.setPixel(xmin, j, Color.YELLOW);
+            bitmap.setPixel(xmax, j, Color.YELLOW);
+        }
+    }
+
+    public static Bitmap getSkinBitmap(int[][] arrBitmap, boolean[][] skinPixels){
+        Bitmap bitmap = Bitmap.createBitmap(arrBitmap.length, arrBitmap[0].length, Bitmap.Config.ARGB_8888);
+        for(int i = 0 ; i < arrBitmap.length ; i++){
+            for(int j = 0 ; j < arrBitmap[0].length ; j++){
+                if(!skinPixels[i][j]){
+                    bitmap.setPixel(i, j, Color.rgb(0, 0, 0));
+                } else{
+                    int pixel = arrBitmap[i][j];
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    bitmap.setPixel(i, j, Color.rgb(red, green, blue));
+                }
+            }
+        }
+        return bitmap;
+    }
+
+    public static Bitmap doSobelOperator(Bitmap bitmap){
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[][] points = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}};
+        int[][] p = new int[8][4];
+//        int[][] redGradient = new int[width][height];
+//        int[][] greenGradient = new int[width][height];
+//        int[][] blueGradient = new int[width][height];
+        int[][] grayGradient = new int[width][height];
+        int gRed, gGreen, gBlue, gGray;
+        for (int i = 1; i < width - 1; i++) {
+            for (int j = 1; j < height - 1; j++) {
+                for(int k = 0; k <points.length; k++){
+                    p[k] = SupportModel.getPixelColor(bitmap, i + points[k][0], j + points[k][1]);
+                }
+//                gRed = Math.abs((p[7][0] + (2*p[0][0]) + p[1][0]) - (p[5][0] + (2*p[4][0]) + p[3][0]))
+//                        + Math.abs((p[1][0] + (2*p[2][0]) + p[3][0]) - (p[7][0] + (2*p[6][0]) + p[5][0]));
+//                gGreen = Math.abs((p[7][1] + (2*p[0][1]) + p[1][1]) - (p[5][1] + (2*p[4][1]) + p[3][1]))
+//                        + Math.abs((p[1][1] + (2*p[2][1]) + p[3][1]) - (p[7][1] + (2*p[6][1]) + p[5][1]));
+//                gBlue = Math.abs((p[7][2] + (2*p[0][2]) + p[1][2]) - (p[5][2] + (2*p[4][2]) + p[3][2]))
+//                        + Math.abs((p[1][2] + (2*p[2][2]) + p[3][2]) - (p[7][2] + (2*p[6][2]) + p[5][2]));
+                gGray = Math.abs((p[7][3] + (2*p[0][3]) + p[1][3]) - (p[5][3] + (2*p[4][3]) + p[3][3]))
+                        + Math.abs((p[1][3] + (2*p[2][3]) + p[3][3]) - (p[7][3] + (2*p[6][3]) + p[5][3]));
+//                redGradient[i][j] = gRed;
+//                greenGradient[i][j] = gGreen;
+//                blueGradient[i][j] = gBlue;
+                grayGradient[i][j] = gGray;
+            }
+        }
+        return SupportModel.arrGSToBitmap(grayGradient);
+    }
+
+    public static Bitmap[] doRobinsonCompass(Bitmap bitmap){
+        Bitmap[] bitmapResults= new Bitmap[8];
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[][] points = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}};
+        int[][] p = new int[8][4];
+//        int[][][] redGradient = new int[8][width][height];
+//        int[][][] greenGradient = new int[8][width][height];
+//        int[][][] blueGradient = new int[8][width][height];
+        int[][][] grayGradient = new int[8][width][height];
+        int gRed, gGreen, gBlue, gGray;
+        for (int i = 1; i < width - 1; i++) {
+            for (int j = 1; j < height - 1; j++) {
+                for(int k = 0; k <points.length; k++){
+                    p[k] = SupportModel.getPixelColor(bitmap, i + points[k][0], j + points[k][1]);
+                }
+                for(int a = 7; a >= 0; a--){
+//                    gRed = Math.abs((p[(7+a)%8][0] + (2*p[(0+a)%8][0]) + p[(1+a)%8][0]) - (p[(5+a)%8][0] + (2*p[(4+a)%8][0]) + p[(3+a)%8][0]))
+//                            + Math.abs((p[(1+a)%8][0] + (2*p[(2+a)%8][0]) + p[(3+a)%8][0]) - (p[(7+a)%8][0] + (2*p[(6+a)%8][0]) + p[(5+a)%8][0]));
+//                    gGreen = Math.abs((p[(7+a)%8][1] + (2*p[(0+a)%8][1]) + p[(1+a)%8][1]) - (p[(5+a)%8][1] + (2*p[(4+a)%8][1]) + p[(3+a)%8][1]))
+//                            + Math.abs((p[(1+a)%8][1] + (2*p[(2+a)%8][1]) + p[(3+a)%8][1]) - (p[(7+a)%8][1] + (2*p[(6+a)%8][1]) + p[(5+a)%8][1]));
+//                    gBlue = Math.abs((p[(7+a)%8][2] + (2*p[(0+a)%8][2]) + p[(1+a)%8][2]) - (p[(5+a)%8][2] + (2*p[(4+a)%8][2]) + p[(3+a)%8][2]))
+//                            + Math.abs((p[(1+a)%8][2] + (2*p[(2+a)%8][2]) + p[(3+a)%8][2]) - (p[(7+a)%8][2] + (2*p[(6+a)%8][2]) + p[(5+a)%8][2]));
+                    gGray = Math.abs((p[(7+a)%8][3] + (2*p[(0+a)%8][3]) + p[(1+a)%8][3]) - (p[(5+a)%8][3] + (2*p[(4+a)%8][3]) + p[(3+a)%8][3]))
+                            + Math.abs((p[(1+a)%8][3] + (2*p[(2+a)%8][3]) + p[(3+a)%8][3]) - (p[(7+a)%8][3] + (2*p[(6+a)%8][3]) + p[(5+a)%8][3]));
+//                    redGradient[a][i][j] = gRed;
+//                    greenGradient[a][i][j] = gGreen;
+//                    blueGradient[a][i][j] = gBlue;
+                    grayGradient[a][i][j] = gGray;
+                }
+
+            }
+        }
+        for(int i = 0; i < 8; i++){
+            bitmapResults[i] = SupportModel.arrGSToBitmap(grayGradient[i]);
+        }
+        return bitmapResults;
+    }
 }

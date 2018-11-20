@@ -158,5 +158,38 @@
                 android:textStyle="bold"
                 android:onClick="tugas6"/>
         </LinearLayout>
+        <LinearLayout
+            android:weightSum="2">
+            <Button
+                android:id="@+id/tugas7Btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="TUGAS 7"
+                android:textStyle="bold"
+                android:onClick="tugas7"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="2">
+            <Button
+                android:id="@+id/tugas8Btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="TUGAS 8"
+                android:textStyle="bold"
+                android:onClick="tugas8"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="2">
+            <Button
+                android:id="@+id/tugas9Btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="TUGAS 9"
+                android:textStyle="bold"
+                android:onClick="tugas9"/>
+        </LinearLayout>
     </TableLayout>
 </ScrollView>

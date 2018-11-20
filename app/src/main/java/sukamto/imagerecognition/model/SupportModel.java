@@ -38,6 +38,22 @@ public class SupportModel {
         return arr;
     }
 
+
+
+    public static int[][] getPixelsArray(Bitmap bitmap){
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[][] arr = new int[width][height];
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int pixel = bitmap.getPixel(i,j);
+                arr[i][j] = pixel;
+            }
+        }
+        return arr;
+    }
+
     public static Bitmap arrToBitmap(int[][] arr){
         Bitmap bitmap = Bitmap.createBitmap(arr.length, arr[0].length, Bitmap.Config.ARGB_8888);
         for(int i = 0 ; i < arr.length ; i++){
@@ -50,6 +66,46 @@ public class SupportModel {
             }
         }
         return bitmap;
+    }
+
+    public static Bitmap arrGSToBitmap(int[][] arr){
+        Bitmap bitmap = Bitmap.createBitmap(arr.length, arr[0].length, Bitmap.Config.ARGB_8888);
+        for(int i = 0 ; i < arr.length ; i++){
+            for(int j = 0 ; j < arr[0].length ; j++){
+                bitmap.setPixel(i, j , Color.rgb(arr[i][j], arr[i][j], arr[i][j]));
+            }
+        }
+        return bitmap;
+    }
+
+    public static Bitmap arrToBitmapColor(int[][] arr){
+        Bitmap bitmap = Bitmap.createBitmap(arr.length, arr[0].length, Bitmap.Config.ARGB_8888);
+        for(int i = 0 ; i < arr.length ; i++){
+            for(int j = 0 ; j < arr[0].length ; j++){
+                int pixel = arr[i][j];
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                int blue = (pixel) & 0xff;
+                bitmap.setPixel(i,j, Color.rgb(red, green, blue));
+            }
+        }
+        return bitmap;
+    }
+
+    public static Bitmap[] arrToBitmapColor(int[][] arrR, int[][] arrG, int[][] arrB){
+        Bitmap bitmap = Bitmap.createBitmap(arrR.length, arrR[0].length, Bitmap.Config.ARGB_8888);
+        Bitmap grayBitmap = Bitmap.createBitmap(arrR.length, arrR[0].length, Bitmap.Config.ARGB_8888);
+        for(int i = 0 ; i < arrR.length ; i++){
+            for(int j = 0 ; j < arrR[0].length ; j++){
+                int red = arrR[i][j];
+                int green = arrG[i][j];
+                int blue = arrB[i][j];
+                int gray = (red + green + blue) / 3;
+                bitmap.setPixel(i,j, Color.rgb(red, green, blue));
+                grayBitmap.setPixel(i,j, Color.rgb(gray, gray, gray));
+            }
+        }
+        return new Bitmap[]{bitmap, grayBitmap};
     }
 
     public static int[] floodFill(int[] pixels, int x, int y, int width) {

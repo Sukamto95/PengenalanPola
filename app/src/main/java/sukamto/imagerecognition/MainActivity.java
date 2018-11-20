@@ -75,4 +75,19 @@ public class MainActivity extends AppCompatActivity {
         Intent tugas6 = new Intent(MainActivity.this,Tugas6.class);
         startActivity(tugas6);
     }
+
+    public void tugas7(View view){
+        Intent tugas7 = new Intent(MainActivity.this,Tugas7.class);
+        startActivity(tugas7);
+    }
+
+    public void tugas8(View view){
+        Intent tugas8 = new Intent(MainActivity.this,Tugas8.class);
+        startActivity(tugas8);
+    }
+
+    public void tugas9(View view){
+        Intent tugas9 = new Intent(MainActivity.this,Tugas9.class);
+        startActivity(tugas9);
+    }
 }

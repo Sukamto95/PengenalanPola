@@ -8,6 +8,9 @@
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="true" />
+    <uses-feature
+        android:name="com.google.android.gms.vision.DEPENDENCIES"
+        android:value="face" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -34,7 +37,10 @@
         <activity android:name=".Tugas4" />
         <activity android:name=".Tugas4b" />
         <activity android:name=".Tugas5a" />
-        <activity android:name=".Tugas6"></activity>
+        <activity android:name=".Tugas6" />
+        <activity android:name=".Tugas7" />
+        <activity android:name=".Tugas8" />
+        <activity android:name=".Tugas9"></activity>
     </application>
 
 </manifest>

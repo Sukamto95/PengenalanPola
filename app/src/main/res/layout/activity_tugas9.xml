@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    tools:context=".Tugas9">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="1"
+        >
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_marginBottom="5dip">
+
+            <ImageView
+                android:id="@+id/imageOriColor"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginRight="5dip"
+                android:src="@drawable/noperson"
+                />
+            <ImageView
+                android:id="@+id/imageResult"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginRight="5dip"
+                android:src="@drawable/noperson"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_marginBottom="5dip">
+
+            <ImageView
+                android:id="@+id/imageResult2"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginRight="5dip"
+                android:src="@drawable/noperson"
+                />
+            <ImageView
+                android:id="@+id/imageResult3"
+                android:scaleType="fitCenter"
+                android:layout_width="0dp"
+                android:layout_height="270dip"
+                android:layout_weight="1"
+                android:layout_marginRight="5dip"
+                android:src="@drawable/noperson"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="3"
+            android:layout_marginBottom="10dip">
+            <Button
+                android:id="@+id/takePictureBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Add Picture"
+                android:onClick="addPicture"/>
+
+            <Button
+                android:id="@+id/preprocessBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Sobel"
+                android:onClick="sobelOperator"/>
+
+            <Button
+                android:id="@+id/processBtn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Robinson"
+                android:onClick="robinsonProcess"/>
+        </LinearLayout>
+
+    </TableLayout>
+</ScrollView>
